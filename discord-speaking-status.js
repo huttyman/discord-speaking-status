@@ -1,9 +1,8 @@
 listenForDiscordEvents = function (e) {
   let user = game.users.find(u=> u.flags["discord-speaking-status"]?.id == e.data.user_id)
   if (!user) return;
-  Hooks.call('discordSpeakingEvent', e.data)
   let tokens = user.character?.getActiveTokens();
-
+  
   const isGMFreeSelection = game.settings.get("discord-speaking-status", "gmFreeSelect");
   if(user.name =='Gamemaster' && isGMFreeSelection){
     tokens = canvas.tokens.controlled;
@@ -38,11 +37,12 @@ cleanDiscordSpeakingMarkers = function () {
 colorizeBorder = function (token) {
   
   let borderColor = Color.from(token.document.getFlag('discord-speaking-status', 'BorderColor'))
-
-  if (!borderColor || isNaN(borderColor)) {
+  
+  if (!borderColor || isNaN(borderColor) ) {
     return;
   }
   
+
   const thickness = 10; //border thickness
   const sB = 1; //scale border
   const nBS = canvas.dimensions.size / 100 //border grid scale (usually 1)
@@ -114,6 +114,16 @@ Hooks.on('renderSettings', (app, html)=>{
   html.find('#settings-access').prepend($(`<button><i class="fa-brands fa-discord"></i> Open Discord StreamKit</button>`).click(function(){openDiscordWindow()}))
 })
 
+Hooks.on('controlToken', (token,controlled)=>{
+  if(!controlled){
+    let borderColor = Color.from(token.document.getFlag('discord-speaking-status', 'BorderColor'))
+    if (!borderColor || isNaN(borderColor) ) {
+      return;
+    }
+    token.document.unsetFlag('discord-speaking-status', 'BorderColor')
+  }
+})
+
 Hooks.on('renderUserConfig', (app, html, data)=>{
   html.append(`<style>#${html.closest('.app').attr('id')} { height: auto !important;} </style>`)
   html.find('form').prepend($(`
@@ -124,13 +134,3 @@ Hooks.on('renderUserConfig', (app, html, data)=>{
   `));
   html.find('input[name="flags.discord-speaking-status.id"]').val(data.user.flags["discord-speaking-status"]?.id)
 });
-
-Hooks.on('controlToken', (token,controlled)=>{
-  if(!controlled){
-    let borderColor = Color.from(token.document.getFlag('discord-speaking-status', 'BorderColor'))
-    if (!borderColor || isNaN(borderColor) ) {
-      return;
-    }
-    token.document.unsetFlag('discord-speaking-status', 'BorderColor')
-  }
-})
