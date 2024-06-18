@@ -37,11 +37,11 @@ cleanDiscordSpeakingMarkers = function () {
 colorizeBorder = function (token) {
   
   let borderColor = Color.from(token.document.getFlag('discord-speaking-status', 'BorderColor'))
-  
+
   if (!borderColor || isNaN(borderColor) ) {
+    
     return;
   }
-  
 
   const thickness = 10; //border thickness
   const sB = 1; //scale border
@@ -53,14 +53,25 @@ colorizeBorder = function (token) {
   const s = 1 // scale
   const sW = sB ? (token.w - (token.w * s)) / 2 : 0
   const sH = sB ? (token.h - (token.h * s)) / 2 : 0
+  token.border.visible = true
   token.border.lineStyle(h * nBS, borderColor.valueOf(), 1.0).drawRoundedRect(-o - q + sW, -o - q + sH, (token.w + h) * s + p, (token.h + h) * s + p, 3);
+ 
 } 
 
 Hooks.on('refreshToken', (t)=>{
+
   colorizeBorder(t)
+ 
 	if (t.isPreview) return;
   $(`#hud > div.speaking-token-marker.${t.id}`).css({ top: `${t.y}px`, left: `${t.x}px`});
 });
+
+Hooks.on("updateToken", (token, updateData, options, userId) => {
+  let tokenObject = token.object
+  
+  tokenObject.refresh()
+});
+
 
 const unsecuredCopyToClipboard = (text) => { 
   const textArea = document.createElement("textarea"); 
