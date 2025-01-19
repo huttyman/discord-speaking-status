@@ -140,28 +140,28 @@ Hooks.on('renderUserConfig', renderUserConfig);
 
 function renderUserConfig(app, html) {
   const PCDisplay = html.querySelector("fieldset:nth-child(2)");
-  const cardSelect = document.createElement("fieldset");
+  const fieldSet = document.createElement("fieldset");
   const legend = document.createElement("legend");
   legend.innerHTML = "Discord speaking status"
-  PCDisplay.after(cardSelect);
+  PCDisplay.after(fieldSet);
 
-  cardSelect.prepend(legend);
+  fieldSet.prepend(legend);
 
   /** @type {User} */
   const user = app.document;
-  const handId = user.getFlag('discord-speaking-status', "id");
-  const handSelect = foundry.applications.fields.createTextInput({
+  const discordId = user.getFlag('discord-speaking-status', "id");
+  const textInput = foundry.applications.fields.createTextInput({
     name: `flags.discord-speaking-status.id`,
-    value: handId,
+    value: discordId,
     blank: ""
   });
 
-  const handSelectGroup = foundry.applications.fields.createFormGroup({
-    label: "test",
+  const discordIdInputField = foundry.applications.fields.createFormGroup({
+    label: "discord id",
     localize: false,
-    input: handSelect
+    input: textInput
   });
 
-  cardSelect.append(handSelectGroup);
+  fieldSet.append(discordIdInputField);
 
 }
