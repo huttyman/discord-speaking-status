@@ -135,13 +135,33 @@ Hooks.on('controlToken', (token,controlled)=>{
   }
 })
 
-Hooks.on('renderUserConfig', (app, html, data)=>{
-  html.append(`<style>#${html.closest('.app').attr('id')} { height: auto !important;} </style>`)
-  html.find('form').prepend($(`
-        <div class="form-group">
-          <label>Discord User ID</label>
-          <input type="text" name="flags.discord-speaking-status.id">
-        </div>
-  `));
-  html.find('input[name="flags.discord-speaking-status.id"]').val(data.user.flags["discord-speaking-status"]?.id)
-});
+
+Hooks.on('renderUserConfig', renderUserConfig);
+
+function renderUserConfig(app, html) {
+  const PCDisplay = html.querySelector("fieldset:nth-child(2)");
+  const cardSelect = document.createElement("fieldset");
+  const legend = document.createElement("legend");
+  legend.innerHTML = "Discord speaking status"
+  PCDisplay.after(cardSelect);
+
+  cardSelect.prepend(legend);
+
+  /** @type {User} */
+  const user = app.document;
+  const handId = user.getFlag('discord-speaking-status', "id");
+  const handSelect = foundry.applications.fields.createTextInput({
+    name: `flags.discord-speaking-status.id`,
+    value: handId,
+    blank: ""
+  });
+
+  const handSelectGroup = foundry.applications.fields.createFormGroup({
+    label: "test",
+    localize: false,
+    input: handSelect
+  });
+
+  cardSelect.append(handSelectGroup);
+
+}
